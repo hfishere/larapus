@@ -7,6 +7,7 @@ use Yajra\Datatables\Html\Builder;
 use Yajra\Datatables\Datatables;
 use App\Book;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\File;
 
 class BooksController extends Controller
 {
@@ -115,7 +116,8 @@ class BooksController extends Controller
      */
     public function edit($id)
     {
-        //
+        $book = Book::find($id);
+        return view('books.edit')->with(compact('book'));
     }
 
     /**
@@ -127,7 +129,52 @@ class BooksController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->validate($request, [
+            'title'     => 'required|unique:books,title,' . $id,
+            'author_id' => 'required|exists:authors,id',
+            'amount'    => 'required|numeric',
+            'cover'     => 'image:max:2048'
+        ]);
+
+        $book = Book::find($id);
+        $book->update($request->all());
+
+        if($request->hasFile('cover')) {
+            // Mengambil cover yang diupload berikut extensinya
+            $filename = null;
+            $uploaded_cover = $request->file('cover');
+            $extension = $uploaded_cover->getClientOriginalExtension();
+
+            // Membuat nama file random dengan extension
+            $filename = md5(time()) . '.' . $extension;
+            $destinationPath = public_path() . DIRECTORY_SEPARATOR . 'img';
+
+            // Memindahkan file ke folder public/img
+            $uploaded_cover->move($destinationPath, $filename);
+
+            // hapus cover lama, jika ada
+            if($book->cover) {
+                $old_cover = $book->cover;
+                $filepath = public_path() . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . $book->cover;
+
+                try {
+                    File::delete($filepath);
+                } catch(FileNotFoundException $ex) {
+                    // File sudah dihapus atau tidak ada
+                }
+            }
+
+            // Ganti field cover dengan cover yang baru
+            $book->cover = $filename;
+            $book->save();
+        }
+
+        Session::flash("flash_notification", [
+            "level" => "success",
+            "message" => "Berhasil mengupdate $book->title"
+        ]);
+
+        return redirect()->route('books.index');
     }
 
     /**

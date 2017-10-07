@@ -26,6 +26,11 @@
     {!! Form::label('cover', 'Cover', ['class' => 'col-md-2 control-label']) !!}
     <div class="col-md-4">
         {!! Form::file('cover') !!}
+        @if(isset($book) && $book->cover)
+        <p>
+            {!! Html::image(asset('img/'.$book->cover), null, ['class' => 'img-rounded img-responsive']) !!}
+        </p>
+        @endif
         {!! $errors->first('cover', '<p class="help-block">:message</p>') !!}
     </div>
 </div>
