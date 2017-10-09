@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Yajra\Datatables\Html\Builder;
 use Yajra\Datatables\Datatables;
 use App\Book;
+use App\Http\Requests\StoreBookRequest;
+use App\Http\Requests\UpdateBookRequest;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\File;
 
@@ -58,14 +60,14 @@ class BooksController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreBookRequest $request)
     {
-        $this->validate($request, [
-            'title' => 'required|unique:books,title',
-            'author_id' => 'required|exists:authors,id',
-            'amount' => 'required|numeric',
-            'cover' => 'image|max:2048'
-        ]);
+        // $this->validate($request, [
+        //     'title' => 'required|unique:books,title',
+        //     'author_id' => 'required|exists:authors,id',
+        //     'amount' => 'required|numeric',
+        //     'cover' => 'image|max:2048'
+        // ]);
 
         $book = Book::create($request->except('cover'));
 
@@ -127,14 +129,14 @@ class BooksController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateBookRequest $request, $id)
     {
-        $this->validate($request, [
-            'title'     => 'required|unique:books,title,' . $id,
-            'author_id' => 'required|exists:authors,id',
-            'amount'    => 'required|numeric',
-            'cover'     => 'image:max:2048'
-        ]);
+        // $this->validate($request, [
+        //     'title'     => 'required|unique:books,title,' . $id,
+        //     'author_id' => 'required|exists:authors,id',
+        //     'amount'    => 'required|numeric',
+        //     'cover'     => 'image:max:2048'
+        // ]);
 
         $book = Book::find($id);
         $book->update($request->all());

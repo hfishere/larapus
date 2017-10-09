@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Author;
+use App\Http\Requests\StoreAuthorRequest;
+use App\Http\Requests\UpdateAuthorRequest;
 use Yajra\Datatables\Html\Builder;
 use Yajra\Datatables\Datatables;
 use Session;
@@ -55,9 +57,9 @@ class AuthorsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreAuthorRequest $request)
     {
-        $this->validate($request, ['name' => 'required|unique:authors']);
+        // $this->validate($request, ['name' => 'required|unique:authors']);
         $author = Author::create($request->all());
         Session::flash("flash_notification", [
             "level" => "success",
@@ -96,9 +98,9 @@ class AuthorsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateAuthorRequest $request, $id)
     {
-        $this->validate($request, ['name' => 'required|unique:authors,name,'. $id]);
+        // $this->validate($request, ['name' => 'required|unique:authors,name,'. $id]);
         $author = Author::find($id);
         $author->update($request->only('name'));
         Session::flash("flash_notification", [
